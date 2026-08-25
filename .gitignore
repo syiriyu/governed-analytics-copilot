@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
+.venv/
+
+# Secrets
+.streamlit/secrets.toml
+
+# Generated data
+data/generated/*
+!data/generated/.gitkeep
+
+# DuckDB databases
+*.duckdb
+*.duckdb.wal
+
+# macOS
+.DS_Store
