@@ -1,0 +1,13 @@
+
+# General Python
+
+SEED is important because it retains the same randomisation for things we've specified it on. Makes our tests replicable.
+
+Just like with DAX, we can use def to define reusable functions to keep our code cleaner.
+
+Python uses indendation to understand what's included in your function
+
+
+# General NumPy
+
+In the case of using rng functions, you have to specify your limit (low and high) & do + 1 because NumPy's upper limit excludes the absolute highest figure. So to get that true number, we need to add 1.
