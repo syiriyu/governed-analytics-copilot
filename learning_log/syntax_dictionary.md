@@ -29,3 +29,11 @@ for ... in ... = loop through values
 return = send the result out of a function
 
 rng.integers() = generate random integers
+
+pd.Timestamp() = convert a value into a pandas datatime data type
+
+pd.Timedelta() = represents a duration e.g. 30 days
+
+pd.DateOffset() = Moves a calendar date by a business/calendar period
+
+date1 <= date2 - returns a boolean

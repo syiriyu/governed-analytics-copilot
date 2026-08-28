@@ -11,3 +11,8 @@ Python uses indendation to understand what's included in your function
 # General NumPy
 
 In the case of using rng functions, you have to specify your limit (low and high) & do + 1 because NumPy's upper limit excludes the absolute highest figure. So to get that true number, we need to add 1.
+
+
+# General Pandas
+
+Selecting one column is df["column"] ... selecting two columns is df[ ["column1", "column 2"] ]
