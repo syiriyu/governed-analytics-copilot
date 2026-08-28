@@ -4,6 +4,7 @@ from .products import generate_products
 from .account_managers import generate_account_managers
 from .contracts import generate_contracts
 from .revenue import generate_monthly_revenue
+from .usage import generate_product_usage
 
 customers = generate_customers()
 customers = add_customer_profiles(customers)
@@ -19,6 +20,11 @@ contracts = generate_contracts(
 
 monthly_revenue = generate_monthly_revenue(
     contracts
+)
+
+product_usage = generate_product_usage(
+    contracts,
+    customers,
 )
 
 #print("\nCustomers")
@@ -38,4 +44,18 @@ monthly_revenue = generate_monthly_revenue(
 
 #print(
 #    f"\nRevenue records: {len(monthly_revenue):,}"
+#)
+
+print("\nProduct Usage")
+print(product_usage.head(10))
+
+print(
+    f"\nUsage records: {len(product_usage):,}"
+)
+
+# to check for one record only
+#print(
+#    product_usage[
+#        product_usage["contract_id"] == "CT000001"
+#    ]
 #)

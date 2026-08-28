@@ -16,3 +16,5 @@ In the case of using rng functions, you have to specify your limit (low and high
 # General Pandas
 
 Selecting one column is df["column"] ... selecting two columns is df[ ["column1", "column 2"] ]
+
+For joins, setting validate=join_type validates the expected relationship when merging datasets - is useful for surfacing duplicated keys rather than silently showing dupe records
