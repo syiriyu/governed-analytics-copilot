@@ -43,3 +43,7 @@ pd.date_range() = creates a sequence of data
 periods= how many dates to generate
 
 freq="MS" = generate dates at the start of each month
+
+rng.poisson(expected_value) =  Generates a random event count centred around an expected number of occurrences.
+
+df.groupby("dimensions")["measure"].mean() = allows us to work out the avg of something by a specified dimensions within a dataframe
