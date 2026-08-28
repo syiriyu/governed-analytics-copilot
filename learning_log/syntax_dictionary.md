@@ -37,3 +37,9 @@ pd.Timedelta() = represents a duration e.g. 30 days
 pd.DateOffset() = Moves a calendar date by a business/calendar period
 
 date1 <= date2 - returns a boolean
+
+pd.date_range() = creates a sequence of data
+
+periods= how many dates to generate
+
+freq="MS" = generate dates at the start of each month
