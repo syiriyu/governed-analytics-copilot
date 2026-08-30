@@ -105,6 +105,6 @@ def generate_contracts(
                 "renewal_eligible": renewal_eligible,
             })
 
-        contract_counter += 1
+            contract_counter += 1
 
     return pd.DataFrame(contracts)
