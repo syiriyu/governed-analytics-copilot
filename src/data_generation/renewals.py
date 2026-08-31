@@ -1,6 +1,9 @@
 # This is going to be used for churn modelling
 
 import pandas as pd
+import numpy as np
+
+from .config import SEED
 
 def build_renewal_features(
     contracts: pd.DataFrame,
@@ -121,3 +124,156 @@ def build_renewal_features(
     ].fillna(0)
 
     return renewal_features
+
+# this is a helper function that says, given a customer's usage trend, how much should we adjust churn probability?
+def calculate_usage_adjustment(
+    usage_change_pct,
+):
+    if pd.isna(usage_change_pct): # if the usage is not available, we're not going to penalise or reward the customer
+        return 0
+
+    if usage_change_pct <= -0.30:
+        return 0.08
+
+    elif usage_change_pct <= -0.10:
+        return 0.04
+
+    elif usage_change_pct >= 0.20:
+        return -0.02
+
+    else:
+        return 0
+
+# same as above but for SLAs
+def calculate_sla_adjustment(
+    sla_breach_rate,
+):
+
+    if pd.isna(sla_breach_rate):
+        return 0
+
+    if sla_breach_rate > 0.50:
+        return 0.06
+
+    elif sla_breach_rate > 0.25:
+        return 0.03
+
+    else:
+        return 0
+
+# same as above but for satisfaction information
+def calculate_satisfaction_adjustment(
+    average_satisfaction,
+):
+
+    if pd.isna(average_satisfaction):
+        return 0
+
+    if average_satisfaction < 3.0:
+        return 0.06
+
+    elif average_satisfaction < 3.5:
+        return 0.03
+
+    elif average_satisfaction >= 4.3:
+        return -0.02
+
+    else:
+        return 0
+
+def generate_renewal_outcomes(
+    renewal_features: pd.DataFrame,
+    customers: pd.DataFrame,
+) -> pd.DataFrame:
+
+    rng = np.random.default_rng(SEED)
+
+    renewal_outcomes = renewal_features.copy()
+
+    customer_risk = customers[
+        [
+            "customer_id",
+            "customer_segment",
+            "baseline_churn_probability",
+        ]
+    ]
+
+    renewal_outcomes = renewal_outcomes.merge(
+        customer_risk,
+        on="customer_id",
+        how="left",
+        validate="many_to_one",
+    )
+
+    renewal_outcomes[
+        "usage_risk_adjustment"
+    ] = renewal_outcomes[
+        "usage_change_pct"
+    ].apply( # apply takes the function and applies it to every value in this column
+        calculate_usage_adjustment
+    )
+
+    renewal_outcomes[
+        "sla_risk_adjustment"
+    ] = renewal_outcomes[
+        "sla_breach_rate"
+    ].apply(
+        calculate_sla_adjustment
+    )
+
+    renewal_outcomes[
+        "satisfaction_risk_adjustment"
+    ] = renewal_outcomes[
+        "average_satisfaction"
+    ].apply(
+        calculate_satisfaction_adjustment
+    )
+
+    # this takes all of our adjusted churn figures and applies our % changes to reveal the final churn probability. #example: enterprise baseline 5% -> usage grew 25% -2% churn -> low SLA breach rate 0% change -> satisfaction = 4.5 -2% churn -> final probability = 1%
+    renewal_outcomes[
+        "churn_probability"
+    ] = (
+        renewal_outcomes[
+            "baseline_churn_probability"
+        ]
+        + renewal_outcomes[
+            "usage_risk_adjustment"
+        ]
+        + renewal_outcomes[
+            "sla_risk_adjustment"
+        ]
+        + renewal_outcomes[
+            "satisfaction_risk_adjustment"
+        ]
+    )
+
+    renewal_outcomes[
+        "churn_probability"
+    ] = renewal_outcomes[
+        "churn_probability"
+    ].clip( # clip constrains values in a range
+        lower=0.01,
+        upper=0.80
+    )
+
+    renewal_outcomes[
+        "random_draw"
+    ] = rng.random( # generates numbers between 0 and 1
+        len(renewal_outcomes)
+    )
+
+    renewal_outcomes[
+        "churned"
+    ] = (
+        renewal_outcomes["random_draw"]
+        <
+        renewal_outcomes["churn_probability"]
+    )
+
+    renewal_outcomes[
+        "renewed"
+    ] = ~renewal_outcomes[ # tilde means Boolean NOT.. so churned = True and renewed = False
+        "churned"
+    ]
+
+    return renewal_outcomes

@@ -6,7 +6,10 @@ from .contracts import generate_contracts
 from .revenue import generate_monthly_revenue
 from .usage import generate_product_usage
 from .support import generate_support_cases
-from .renewals import build_renewal_features
+from .renewals import (
+    build_renewal_features,
+    generate_renewal_outcomes,
+)
 
 customers = generate_customers()
 customers = add_customer_profiles(customers)
@@ -37,6 +40,11 @@ renewal_features = build_renewal_features(
     contracts,
     product_usage,
     support_cases,
+)
+
+renewal_outcomes = generate_renewal_outcomes(
+    renewal_features,
+    customers,
 )
 
 #print("\nCustomers")
@@ -99,16 +107,31 @@ renewal_features = build_renewal_features(
 #     )["resolution_hours"].mean()
 # )
 
-print("\nRenewal Features")
+# print("\nRenewal Features")
+
+# print(
+#     renewal_features[
+#         [
+#             "contract_id",
+#             "usage_change_pct",
+#             "support_case_count",
+#             "sla_breach_rate",
+#             "average_satisfaction",
+#         ]
+#     ].head(20)
+# )
 
 print(
-    renewal_features[
+    renewal_outcomes[
         [
             "contract_id",
+            "customer_segment",
+            "baseline_churn_probability",
             "usage_change_pct",
-            "support_case_count",
             "sla_breach_rate",
             "average_satisfaction",
+            "churn_probability",
+            "churned",
         ]
     ].head(20)
 )
@@ -127,22 +150,25 @@ print(
 # this is the correct approach
 
 # takes a global avg of the SLA breach rate
-average_breach_rate = renewal_features[
-    "sla_breach_rate"
-].mean()
+# average_breach_rate = renewal_features[
+#     "sla_breach_rate"
+# ].mean()
 
-# then uses that global SLA breach rate avg and returns contracts whose sla rate is higher than the global avg
-high_breach_contracts = renewal_features[
-    renewal_features["sla_breach_rate"]
-    > average_breach_rate
-]
+# # then uses that global SLA breach rate avg and returns contracts whose sla rate is higher than the global avg
+# high_breach_contracts = renewal_features[
+#     renewal_features["sla_breach_rate"]
+#     > average_breach_rate
+# ]
 
-# then printing the resultant high breach contracts' avg satisfaction score
-print(
-    high_breach_contracts[
-        "average_satisfaction"
-    ].mean()
-)
+# # then printing the resultant high breach contracts' avg satisfaction score
+# print(
+#     high_breach_contracts[
+#         "average_satisfaction"
+#     ].mean()
+#)
+
+
+
 
 #-------------------------------------
 
@@ -169,3 +195,7 @@ print(
 # ].sort_values("contract_id")
 
 # print(duplicate_contracts.head(20))
+
+# new test: find out is churn actually higher among contracts where usage declined
+# find out how to derive a boolean column from usage_change_pct <0
+# then groupby() it and calculate the mean of churned

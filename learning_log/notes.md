@@ -5,7 +5,7 @@ SEED is important because it retains the same randomisation for things we've spe
 
 Just like with DAX, we can use def to define reusable functions to keep our code cleaner.
 
-Python uses indendation to understand what's included in your function
+Python uses indendation to understand what's included in your function. So when it comes to defining functions, you keep everything flush left if they're independent functions, and indent them if they're part of another function
 
 
 # General NumPy
